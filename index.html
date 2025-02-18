@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Identifier</title>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,6 +19,11 @@
       margin-top: 20px;
       font-weight: bold;
     }
+    #uploadedImage {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -30,7 +35,7 @@
   
   <!-- Display uploaded image -->
   <div>
-    <img id="uploadedImage" src="" alt="Uploaded Image" width="300" />
+    <img id="uploadedImage" src="" alt="Uploaded Image" />
   </div>
   
   <!-- Display result -->
@@ -41,7 +46,7 @@
 
     // Load the pre-trained model
     async function loadModel() {
-      model = await tf.loadGraphModel('https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.0.0/dist/mobilenet/model.json');
+      model = await mobilenet.load();
       console.log("Model loaded successfully");
     }
 
