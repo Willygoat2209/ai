@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Identifier</title>
+  <title>Dog Breed Identifier</title>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
   <style>
@@ -27,24 +26,20 @@
   </style>
 </head>
 <body>
-  <h1>Image Identifier</h1>
-  <p>Upload an image to identify it</p>
+  <h1>Dog Breed Identifier</h1>
+  <p>Upload an image of a dog to identify its breed</p>
   
-  <!-- Image upload -->
   <input type="file" id="imageUpload" accept="image/*">
   
-  <!-- Display uploaded image -->
   <div>
-    <img id="uploadedImage" src="" alt="Uploaded Image" />
+    <img id="uploadedImage" src="" alt="Uploaded Image">
   </div>
   
-  <!-- Display result -->
   <div id="result"></div>
 
   <script>
     let model;
 
-    // Load the pre-trained model
     async function loadModel() {
       model = await mobilenet.load();
       console.log("Model loaded successfully");
@@ -52,32 +47,38 @@
 
     loadModel();
 
-    // Handle image upload
     document.getElementById('imageUpload').addEventListener('change', async (event) => {
       const file = event.target.files[0];
       if (file) {
         const imgElement = document.getElementById('uploadedImage');
         imgElement.src = URL.createObjectURL(file);
         
-        // Wait for image to load and classify
         imgElement.onload = async () => {
           const image = tf.browser.fromPixels(imgElement);
           const predictions = await model.classify(image);
-          displayResults(predictions);
           image.dispose(); // Clean up memory
+
+          // Filter results to show only dog breeds
+          const dogPredictions = predictions.filter(pred => pred.className.toLowerCase().includes("dog") || pred.className.includes("terrier") || pred.className.includes("retriever") || pred.className.includes("shepherd") || pred.className.includes("bulldog") || pred.className.includes("hound"));
+
+          displayResults(dogPredictions);
         };
       }
     });
 
-    // Display the results
     function displayResults(predictions) {
       const resultElement = document.getElementById('result');
-      resultElement.innerHTML = `
-        <h2>Prediction:</h2>
-        <p>Class: ${predictions[0].className}</p>
-        <p>Probability: ${(predictions[0].probability * 100).toFixed(2)}%</p>
-      `;
+      if (predictions.length > 0) {
+        resultElement.innerHTML = `
+          <h2>Prediction:</h2>
+          <p>Breed: ${predictions[0].className}</p>
+          <p>Probability: ${(predictions[0].probability * 100).toFixed(2)}%</p>
+        `;
+      } else {
+        resultElement.innerHTML = "<h2>No dog breed detected. Try another image.</h2>";
+      }
     }
   </script>
+
 </body>
 </html>
